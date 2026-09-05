@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "SmartHRM.BusinessLogic": {
+      "commandName": "Project",
+      "sqlDebugging": true,
+      "jsWebView2Debugging": true
+    }
+  }
+}

@@ -1,0 +1,476 @@
+﻿@{
+    ViewData["Title"] = "Add Employee";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+<style>
+    /* Glassmorphic Panels */
+    .glass-panel {
+        background: rgba(15, 23, 42, 0.72);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 20px 45px -12px rgba(0, 0, 0, 0.55);
+    }
+
+    /* Video Feed Container */
+    .capture-feed-wrapper {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        background: #030712;
+        border-radius: 16px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .capture-img-stream {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .face-focus-target {
+        position: absolute;
+        width: 55%;
+        height: 70%;
+        border: 2px dashed #22c55e;
+        border-radius: 24px;
+        pointer-events: none;
+        box-shadow: 0 0 0 9999px rgba(3, 7, 18, 0.45);
+    }
+
+    .live-badge {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        background: rgba(239, 68, 68, 0.85);
+        color: #ffffff;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        z-index: 5;
+        backdrop-filter: blur(4px);
+    }
+
+    .live-indicator {
+        width: 7px;
+        height: 7px;
+        background: #ffffff;
+        border-radius: 50%;
+        animation: pulseDot 1.4s infinite;
+    }
+
+    @@keyframes pulseDot {
+        0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        50% {
+            opacity: 0.3;
+            transform: scale(0.85);
+        }
+    }
+
+    /* Form Controls */
+    .glass-input {
+        background: rgba(255, 255, 255, 0.06) !important;
+        border: 1px solid rgba(255, 255, 255, 0.14) !important;
+        color: #f1f5f9 !important;
+        border-radius: 10px !important;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+    }
+
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.12) !important;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+            color: #ffffff !important;
+        }
+
+        .glass-input option {
+            background: #0f172a;
+            color: #f8fafc;
+        }
+
+    /* Buttons */
+    .btn-glow-primary {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        border: none;
+        color: #ffffff;
+        font-weight: 600;
+        border-radius: 10px;
+        transition: all 0.25s ease;
+        box-shadow: 0 8px 18px -4px rgba(37, 99, 235, 0.45);
+    }
+
+        .btn-glow-primary:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+            box-shadow: 0 12px 22px -4px rgba(37, 99, 235, 0.65);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+    .btn-glow-success {
+        background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+        border: none;
+        color: #ffffff;
+        font-weight: 600;
+        border-radius: 10px;
+        transition: all 0.25s ease;
+        box-shadow: 0 8px 18px -4px rgba(22, 163, 74, 0.45);
+    }
+
+        .btn-glow-success:hover {
+            background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+            box-shadow: 0 12px 22px -4px rgba(22, 163, 74, 0.65);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+    .btn-glass-secondary {
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        color: #93c5fd;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+        .btn-glass-secondary:hover {
+            background: rgba(255, 255, 255, 0.14);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+    /* Thumbnail Gallery */
+    .preview-tray {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 6px;
+        max-height: 130px;
+        overflow-y: auto;
+        padding: 6px;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+    }
+
+        .preview-tray img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+    /* Responsive Adjustments */
+    @@media (max-width: 991.98px) {
+        .form-section-col {
+            border-left: none !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 24px !important;
+            margin-top: 8px;
+        }
+    }
+</style>
+
+<div class="container-fluid py-4 px-3 px-md-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold text-white mb-1">Register New Employee</h4>
+            <span class="text-muted small">Capture facial biometrics and save employee records</span>
+        </div>
+        <a asp-action="Index" class="btn btn-glass-secondary btn-sm px-3 py-2">
+            <i class="bi bi-arrow-left me-1"></i> Back to Directory
+        </a>
+    </div>
+
+    @Html.AntiForgeryToken()
+
+    <div class="glass-panel p-3 p-md-4">
+        <div class="row g-4">
+            <!-- LEFT: Camera Stream & Biometric Capture Area -->
+            <div class="col-12 col-lg-6">
+                <div class="capture-feed-wrapper">
+                    <div class="live-badge">
+                        <span class="live-indicator"></span> LIVE
+                    </div>
+
+                    <!-- AI Service Stream Feed -->
+                    <img id="registrationVideoFeed"
+                         src="http://127.0.0.1:8000/video_feed"
+                         crossorigin="anonymous"
+                         class="capture-img-stream"
+                         alt="Camera Feed"
+                         onerror="handleStreamOffline()" />
+
+                    <div class="face-focus-target"></div>
+
+                    <!-- Offline State Message -->
+                    <div id="camOfflineNotice" style="display: none; text-align: center; color: #94a3b8; padding: 20px;">
+                        <i class="bi bi-camera-video-off fs-1 d-block mb-2 text-danger"></i>
+                        <h6 class="fw-bold text-white mb-1">Camera Stream Offline</h6>
+                        <small class="text-secondary">Start <code>python main.py</code> at port 8000</small>
+                    </div>
+                </div>
+
+                <!-- Hidden Canvas for Fallback Frame Grabbing -->
+                <canvas id="auxCanvas" class="d-none" width="640" height="480"></canvas>
+
+                <!-- Action Button -->
+                <div class="mt-3 text-center">
+                    <button type="button"
+                            class="btn btn-glow-success px-4 py-2 w-100 w-sm-auto"
+                            onclick="captureRegistrationFrames()"
+                            id="btnCapture">
+                        <i class="bi bi-camera-fill me-1"></i> Capture Face (20 Frames)
+                    </button>
+                </div>
+
+                <!-- Progress Bar & Status -->
+                <div class="mt-3">
+                    <div class="d-flex justify-content-between small fw-semibold text-secondary mb-1">
+                        <span id="captureStatusText" class="text-muted">Ready to capture biometrics</span>
+                        <span id="captureCountBadge" class="text-info">0 / 20</span>
+                    </div>
+                    <div class="progress" style="height: 6px; background-color: rgba(255, 255, 255, 0.1);">
+                        <div id="captureProgressBar" class="progress-bar bg-success" role="progressbar" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <!-- Captured Thumbnails Grid Preview -->
+                <div class="mt-3" id="traySection" style="display: none;">
+                    <span class="small fw-semibold text-secondary d-block mb-1">Captured Samples Preview</span>
+                    <div class="preview-tray" id="capturedThumbsContainer"></div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Form Input Fields -->
+            <div class="col-12 col-lg-6 ps-lg-4 form-section-col" style="border-left: 1px solid rgba(255, 255, 255, 0.1);">
+                <h6 class="fw-bold text-white border-bottom border-secondary border-opacity-25 pb-2 mb-3">Employee Details</h6>
+
+                <div class="row g-3">
+                    <div class="col-12 col-sm-6">
+                        <label class="form-label small fw-semibold text-light mb-1" for="empCode">Employee Code <span class="text-danger">*</span></label>
+                        <input type="text" id="empCode" class="form-control glass-input" placeholder="EMP00201" required />
+                    </div>
+
+                    <div class="col-12 col-sm-6">
+                        <label class="form-label small fw-semibold text-light mb-1" for="empName">Full Name <span class="text-danger">*</span></label>
+                        <input type="text" id="empName" class="form-control glass-input" placeholder="John Doe" required />
+                    </div>
+
+                    <div class="col-12 col-sm-6">
+                        <label class="form-label small fw-semibold text-light mb-1" for="empEmail">Email Address <span class="text-danger">*</span></label>
+                        <input type="email" id="empEmail" class="form-control glass-input" placeholder="john.doe@company.com" required />
+                    </div>
+
+                    <div class="col-12 col-sm-6">
+                        <label class="form-label small fw-semibold text-light mb-1" for="empPhone">Phone Number</label>
+                        <input type="tel" id="empPhone" class="form-control glass-input" placeholder="9876543210" />
+                    </div>
+
+                    <div class="col-12 col-sm-6">
+                        <label class="form-label small fw-semibold text-light mb-1" for="empDept">Department <span class="text-danger">*</span></label>
+                        <select id="empDept" class="form-select glass-input">
+                            <option value="IT">IT</option>
+                            <option value="HR">HR</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="Operations">Operations</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-sm-6">
+                        <label class="form-label small fw-semibold text-light mb-1" for="empRole">Designation <span class="text-danger">*</span></label>
+                        <input type="text" id="empRole" class="form-control glass-input" placeholder="Software Engineer" required />
+                    </div>
+
+                    <div class="col-12 col-sm-6">
+                        <label class="form-label small fw-semibold text-light mb-1" for="empGender">Gender</label>
+                        <select id="empGender" class="form-select glass-input">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-sm-6">
+                        <label class="form-label small fw-semibold text-light mb-1" for="empAddress">Address</label>
+                        <input type="text" id="empAddress" class="form-control glass-input" placeholder="City, State" />
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+                    <button type="button"
+                            class="btn btn-glow-primary w-100 py-2 py-md-3 fw-semibold d-flex align-items-center justify-content-center gap-2"
+                            onclick="submitEmployee()"
+                            id="btnSubmit">
+                        <i class="bi bi-person-check-fill"></i> Save &amp; Register Employee
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let capturedFrames = [];
+    const totalFrames = 20;
+
+    function handleStreamOffline() {
+        document.getElementById("registrationVideoFeed").style.display = "none";
+        document.querySelector(".face-focus-target").style.display = "none";
+        document.querySelector(".live-badge").style.display = "none";
+        document.getElementById("camOfflineNotice").style.display = "block";
+    }
+
+    async function captureRegistrationFrames() {
+        const btnCapture = document.getElementById("btnCapture");
+        const statusText = document.getElementById("captureStatusText");
+        const countBadge = document.getElementById("captureCountBadge");
+        const progressBar = document.getElementById("captureProgressBar");
+        const thumbsContainer = document.getElementById("capturedThumbsContainer");
+        const traySection = document.getElementById("traySection");
+
+        capturedFrames = [];
+        thumbsContainer.innerHTML = "";
+        btnCapture.disabled = true;
+        traySection.style.display = "block";
+        statusText.className = "text-info";
+        statusText.innerText = "Please look directly into the camera frame...";
+
+        const imgFeed = document.getElementById("registrationVideoFeed");
+        const canvas = document.getElementById("auxCanvas");
+        const ctx = canvas.getContext("2d");
+
+        for (let i = 1; i <= totalFrames; i++) {
+            let base64Data = null;
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/snapshot?t=${Date.now()}`);
+                if (response.ok) {
+                    const blob = await response.blob();
+                    base64Data = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve(reader.result);
+                        reader.readAsDataURL(blob);
+                    });
+                }
+            } catch (networkErr) {
+                // Fallback to strategy 2
+            }
+
+            if (!base64Data) {
+                try {
+                    ctx.drawImage(imgFeed, 0, 0, canvas.width, canvas.height);
+                    base64Data = canvas.toDataURL("image/jpeg", 0.88);
+                } catch (canvasErr) {
+                    console.error("Canvas draw fallback failed:", canvasErr);
+                }
+            }
+
+            if (base64Data) {
+                capturedFrames.push(base64Data);
+                const thumb = document.createElement("img");
+                thumb.src = base64Data;
+                thumbsContainer.appendChild(thumb);
+            }
+
+            const percent = Math.round((i / totalFrames) * 100);
+            progressBar.style.width = percent + "%";
+            countBadge.innerText = `${i} / ${totalFrames}`;
+
+            await new Promise((r) => setTimeout(r, 110));
+        }
+
+        if (capturedFrames.length >= totalFrames) {
+            statusText.className = "text-success fw-bold";
+            statusText.innerText = "✓ 20 frames captured! Proceed with saving.";
+            btnCapture.className = "btn btn-glass-secondary px-4 py-2 fw-semibold";
+            btnCapture.innerHTML = "<i class=\"bi bi-check2-circle me-1\"></i> Recapture";
+        } else {
+            statusText.className = "text-danger fw-bold";
+            statusText.innerText = `Captured only ${capturedFrames.length} frames. Check if Python camera service is active.`;
+        }
+
+        btnCapture.disabled = false;
+    }
+
+    async function submitEmployee() {
+        const code = document.getElementById("empCode").value.trim();
+        const name = document.getElementById("empName").value.trim();
+        const email = document.getElementById("empEmail").value.trim();
+        const phone = document.getElementById("empPhone").value.trim();
+        const dept = document.getElementById("empDept").value.trim();
+        const role = document.getElementById("empRole").value.trim();
+        const gender = document.getElementById("empGender").value.trim();
+        const address = document.getElementById("empAddress").value.trim();
+
+        if (!code || !name || !email || !dept || !role) {
+            alert("Please fill in all required fields (Code, Name, Email, Department, Designation).");
+            return;
+        }
+
+        if (capturedFrames.length === 0) {
+            alert("Please capture the 20 facial biometric frames first.");
+            return;
+        }
+
+        const btnSubmit = document.getElementById("btnSubmit");
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = "<span class=\"spinner-border spinner-border-sm me-2\"></span> Processing Biometrics & Saving...";
+
+        const payload = {
+            employeeCode: code,
+            fullName: name,
+            email: email,
+            phone: phone,
+            department: dept,
+            designation: role,
+            gender: gender,
+            address: address,
+            capturedFaceImages: capturedFrames
+        };
+
+        try {
+            const res = await fetch("/Employee/Create", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                alert("Employee registered successfully!");
+                window.location.href = "/Employee/Index";
+            } else {
+                alert("Registration failed: " + (data.message || "Unknown error occurred."));
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = "<i class=\"bi bi-person-check-fill\"></i> Save & Register Employee";
+            }
+        } catch (err) {
+            alert("Network/Server error: " + err.message);
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = "<i class=\"bi bi-person-check-fill\"></i> Save & Register Employee";
+        }
+    }
+</script>

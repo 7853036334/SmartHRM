@@ -1,0 +1,364 @@
+﻿@model IEnumerable<SmartHRM.DataAccess.Entities.AttendanceLog>
+
+@{
+    ViewData["Title"] = "Attendance Reports";
+}
+
+<style>
+    /* Base Glassmorphism Panels */
+    .glass-panel {
+        background: rgba(15, 23, 42, 0.72);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 20px 45px -12px rgba(0, 0, 0, 0.55);
+    }
+
+    /* Form Inputs */
+    .glass-input {
+        background: rgba(255, 255, 255, 0.06) !important;
+        border: 1px solid rgba(255, 255, 255, 0.14) !important;
+        color: #f1f5f9 !important;
+        border-radius: 10px !important;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+    }
+
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.12) !important;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+            color: #ffffff !important;
+        }
+
+        .glass-input option {
+            background: #0f172a;
+            color: #f8fafc;
+        }
+
+    /* Buttons */
+    .btn-glow-primary {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        border: none;
+        color: #ffffff;
+        font-weight: 600;
+        border-radius: 10px;
+        transition: all 0.25s ease;
+        box-shadow: 0 8px 18px -4px rgba(37, 99, 235, 0.45);
+        white-space: nowrap;
+    }
+
+        .btn-glow-primary:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+            box-shadow: 0 12px 22px -4px rgba(37, 99, 235, 0.65);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+    .btn-glass-secondary {
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        color: #93c5fd;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+        .btn-glass-secondary:hover {
+            background: rgba(255, 255, 255, 0.14);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+    /* Desktop & Tablet Table Styles */
+    .table-glass {
+        color: #cbd5e1;
+        margin-bottom: 0;
+    }
+
+        .table-glass thead tr {
+            background: rgba(255, 255, 255, 0.04);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .table-glass th {
+            color: #94a3b8;
+            font-size: 0.75rem;
+            letter-spacing: 0.06em;
+            font-weight: 600;
+            padding-top: 16px;
+            padding-bottom: 16px;
+            white-space: nowrap;
+        }
+
+        .table-glass tbody tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: background-color 0.15s ease;
+        }
+
+            .table-glass tbody tr:hover {
+                background-color: rgba(255, 255, 255, 0.04);
+            }
+
+        .table-glass td {
+            padding-top: 14px;
+            padding-bottom: 14px;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+    /* Badges */
+    .badge-present {
+        background: rgba(34, 197, 94, 0.16);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.35);
+    }
+
+    .badge-late {
+        background: rgba(234, 179, 8, 0.16);
+        color: #facc15;
+        border: 1px solid rgba(234, 179, 8, 0.35);
+    }
+
+    .badge-absent {
+        background: rgba(239, 68, 68, 0.16);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+
+    .badge-dept {
+        background: rgba(148, 163, 184, 0.12);
+        color: #94a3b8;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    /* Mobile Responsive Card Row View */
+    @@media (max-width: 767.98px) {
+        .reports-container {
+            padding-left: 12px !important;
+            padding-right: 12px !important;
+        }
+
+        .header-actions {
+            flex-direction: column;
+            align-items: stretch !important;
+            gap: 12px;
+        }
+
+        .desktop-table-view {
+            display: none !important;
+        }
+
+        .mobile-cards-view {
+            display: flex !important;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mobile-card-row {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 14px;
+        }
+    }
+
+    @@media (min-width: 768px) {
+        .mobile-cards-view {
+            display: none !important;
+        }
+    }
+</style>
+
+<div class="container-fluid py-4 px-3 px-md-4 reports-container">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-md-center header-actions mb-4">
+        <div>
+            <h4 class="fw-bold text-white mb-1">Attendance Reports</h4>
+            <div class="small text-muted">Filter historical attendance and export biometric logs</div>
+        </div>
+        <a asp-controller="LiveAttendance" asp-action="Index" class="btn btn-glass-secondary d-flex align-items-center justify-content-center gap-2 py-2 px-3">
+            <i class="bi bi-camera-video"></i> Live Attendance Gate
+        </a>
+    </div>
+
+    <!-- Responsive Filter Bar -->
+    <div class="glass-panel p-3 p-md-4 mb-4">
+        <form method="get" asp-action="Reports" class="row g-2 g-md-3 align-items-end">
+            <div class="col-12 col-sm-6 col-md-3 col-xl-2">
+                <label class="form-label small fw-semibold text-light mb-1">Start Date</label>
+                <input type="date" name="startDate" value="@ViewBag.StartDate" class="form-control glass-input" />
+            </div>
+            <div class="col-12 col-sm-6 col-md-3 col-xl-2">
+                <label class="form-label small fw-semibold text-light mb-1">End Date</label>
+                <input type="date" name="endDate" value="@ViewBag.EndDate" class="form-control glass-input" />
+            </div>
+            <div class="col-12 col-sm-6 col-md-3 col-xl-2">
+                <label class="form-label small fw-semibold text-light mb-1">Department</label>
+                <select name="department" class="form-select glass-input">
+                    <option value="All" selected="@(ViewBag.Department == "All")">All Departments</option>
+                    <option value="IT" selected="@(ViewBag.Department == "IT")">IT</option>
+                    <option value="HR" selected="@(ViewBag.Department == "HR")">HR</option>
+                    <option value="Finance" selected="@(ViewBag.Department == "Finance")">Finance</option>
+                    <option value="Operations" selected="@(ViewBag.Department == "Operations")">Operations</option>
+                </select>
+            </div>
+            <div class="col-12 col-sm-6 col-md-3 col-xl-2">
+                <label class="form-label small fw-semibold text-light mb-1">Status</label>
+                <select name="status" class="form-select glass-input">
+                    <option value="All" selected="@(ViewBag.Status == "All")">All Status</option>
+                    <option value="Present" selected="@(ViewBag.Status == "Present")">Present</option>
+                    <option value="Late" selected="@(ViewBag.Status == "Late")">Late</option>
+                    <option value="Absent" selected="@(ViewBag.Status == "Absent")">Absent</option>
+                </select>
+            </div>
+            <div class="col-12 col-xl-4 d-flex flex-row gap-2 mt-3 mt-xl-0">
+                <button type="submit" class="btn btn-glow-primary flex-fill py-2">
+                    <i class="bi bi-search me-1"></i> Filter
+                </button>
+                <a asp-action="ExportToExcel"
+                   asp-route-startDate="@ViewBag.StartDate"
+                   asp-route-endDate="@ViewBag.EndDate"
+                   asp-route-department="@ViewBag.Department"
+                   asp-route-status="@ViewBag.Status"
+                   class="btn btn-glass-secondary d-flex align-items-center justify-content-center gap-1 flex-fill py-2">
+                    <i class="bi bi-file-earmark-excel text-success"></i> Export Excel
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Data Display Section -->
+    <div class="glass-panel overflow-hidden p-2 p-md-0">
+        <!-- Desktop / Tablet Table View -->
+        <div class="table-responsive desktop-table-view">
+            <table class="table table-glass align-middle">
+                <thead>
+                    <tr class="text-uppercase">
+                        <th class="ps-4">Employee</th>
+                        <th>Department</th>
+                        <th>Date</th>
+                        <th>Time In</th>
+                        <th>Time Out</th>
+                        <th>Status</th>
+                        <th class="pe-4 text-end">Working Hours</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var row in Model)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-semibold text-white">@(row.Employee?.FullName ?? "Unknown")</div>
+                                    <div class="text-muted small">@(row.Employee?.EmployeeCode ?? "--")</div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-dept">@(row.Employee?.Department ?? "General")</span>
+                                </td>
+                                <td class="text-light small">@row.Date.ToString("MMM dd, yyyy")</td>
+                                <td class="fw-semibold text-info small">
+                                    @(row.TimeIn.HasValue ? DateTime.Today.Add(row.TimeIn.Value).ToString("hh:mm tt") : "--:--")
+                                </td>
+                                <td class="text-light small">
+                                    @(row.TimeOut.HasValue ? DateTime.Today.Add(row.TimeOut.Value).ToString("hh:mm tt") : "--:--")
+                                </td>
+                                <td>
+                                    @if (row.Status == "Present")
+                                    {
+                                        <span class="badge badge-present px-2 py-1">Present</span>
+                                    }
+                                    else if (row.Status == "Late")
+                                    {
+                                        <span class="badge badge-late px-2 py-1">Late</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-absent px-2 py-1">@row.Status</span>
+                                    }
+                                </td>
+                                <td class="pe-4 text-end text-light small">
+                                    @(row.WorkingHours?.ToString(@"hh\:mm") ?? "--:--")
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <i class="bi bi-calendar-x fs-1 d-block mb-2 text-muted"></i>
+                                <span class="text-muted">No attendance records found for the selected range.</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile Card List View (<768px) -->
+        <div class="mobile-cards-view">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var row in Model)
+                {
+                    <div class="mobile-card-row">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <div class="fw-semibold text-white fs-6">@(row.Employee?.FullName ?? "Unknown")</div>
+                                <div class="text-muted small">@(row.Employee?.EmployeeCode ?? "--") &bull; @(row.Employee?.Department ?? "General")</div>
+                            </div>
+                            <div>
+                                @if (row.Status == "Present")
+                                {
+                                    <span class="badge badge-present px-2 py-1">Present</span>
+                                }
+                                else if (row.Status == "Late")
+                                {
+                                    <span class="badge badge-late px-2 py-1">Late</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-absent px-2 py-1">@row.Status</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="row g-2 pt-2 border-top border-secondary border-opacity-25 small">
+                            <div class="col-6">
+                                <span class="text-muted d-block">Date</span>
+                                <span class="text-light">@row.Date.ToString("MMM dd, yyyy")</span>
+                            </div>
+                            <div class="col-6 text-end">
+                                <span class="text-muted d-block">Work Time</span>
+                                <span class="text-light">@(row.WorkingHours?.ToString(@"hh\:mm") ?? "--:--")</span>
+                            </div>
+                            <div class="col-6">
+                                <span class="text-muted d-block">Time In</span>
+                                <span class="text-info fw-semibold">
+                                    @(row.TimeIn.HasValue ? DateTime.Today.Add(row.TimeIn.Value).ToString("hh:mm tt") : "--:--")
+                                </span>
+                            </div>
+                            <div class="col-6 text-end">
+                                <span class="text-muted d-block">Time Out</span>
+                                <span class="text-light">
+                                    @(row.TimeOut.HasValue ? DateTime.Today.Add(row.TimeOut.Value).ToString("hh:mm tt") : "--:--")
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-calendar-x fs-1 d-block mb-2 text-muted"></i>
+                    <span class="text-muted">No attendance records found for the selected range.</span>
+                </div>
+            }
+        </div>
+    </div>
+</div>

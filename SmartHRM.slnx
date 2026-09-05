@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/SmartHRM.AIService/">
+    <File Path="main.py" />
+  </Folder>
+  <Project Path="SmartHRM.BusinessLogic/SmartHRM.BusinessLogic.csproj" />
+  <Project Path="SmartHRM.DataAccess/SmartHRM.DataAccess.csproj" />
+  <Project Path="SmartHRM.Presentation/SmartHRM.Presentation.csproj" />
+</Solution>

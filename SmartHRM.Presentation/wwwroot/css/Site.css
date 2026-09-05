@@ -1,0 +1,45 @@
+﻿/* Force dark theme root variables for Bootstrap 5 */
+:root {
+    --bs-body-bg: #0b0f19;
+    --bs-body-color: #f1f5f9;
+}
+
+/* Ensure the main page wrapper stays transparent dark */
+body {
+    background-color: #0b0f19 !important;
+    color: #f1f5f9 !important;
+}
+
+.main-wrapper {
+    background-color: transparent !important;
+}
+
+/* Stop Bootstrap tables from forcing white backgrounds */
+.table {
+    --bs-table-bg: transparent !important;
+    --bs-table-accent-bg: transparent !important;
+    --bs-table-striped-bg: transparent !important;
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.04) !important;
+    color: #cbd5e1 !important;
+}
+
+    .table > :not(caption) > * > * {
+        background-color: transparent !important;
+        border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+    }
+
+/* Ensure glass panels never inherit white card backgrounds */
+.glass-panel, .card {
+    background: rgba(15, 23, 42, 0.72) !important;
+    backdrop-filter: blur(18px) !important;
+    -webkit-backdrop-filter: blur(18px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #f1f5f9 !important;
+}
+
+/* Remove default light-gray table header background */
+.table thead th, .table-light {
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: #94a3b8 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}

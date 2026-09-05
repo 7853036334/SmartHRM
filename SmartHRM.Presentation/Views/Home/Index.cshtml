@@ -1,0 +1,77 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container-fluid mt-3">
+    <!-- Metric Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm border-0 bg-primary text-white">
+                <h6>Total Employees</h6>
+                <h2>@ViewBag.TotalEmployees</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm border-0 bg-success text-white">
+                <h6>Present Today</h6>
+                <h2>@ViewBag.PresentToday</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm border-0 bg-danger text-white">
+                <h6>Absent Today</h6>
+                <h2>@ViewBag.AbsentToday</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm border-0 bg-warning text-white">
+                <h6>Late Arrivals</h6>
+                <h2>@ViewBag.LateArrivals</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance Chart & Recent Activities -->
+    <div class="row g-3">
+        <div class="col-md-8">
+            <div class="card p-3 shadow-sm border-0">
+                <h5>Today's Attendance Overview</h5>
+                <canvas id="attendanceChart" height="60"></canvas>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3 shadow-sm border-0">
+                <h5>Recent Activities</h5>
+                <ul class="list-group list-group-flush">
+                    @foreach (var log in ViewBag.RecentLogs)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>@log.Employee.FullName</strong><br />
+                                <small class="text-muted">@log.TimeIn?.ToString(@"hh\:mm")</small>
+                            </div>
+                            <span class="badge @(log.Status == "Late" ? "bg-warning" : "bg-success")">@log.Status</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('attendanceChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Present', 'Late', 'Absent'],
+                datasets: [{
+                    data: [@ViewBag.PresentToday, @ViewBag.LateArrivals, @ViewBag.AbsentToday],
+                    backgroundColor: ['#198754', '#ffc107', '#dc3545']
+                }]
+            }
+        });
+    </script>
+}

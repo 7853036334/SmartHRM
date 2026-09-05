@@ -1,0 +1,327 @@
+﻿@model SmartHRM.DataAccess.Entities.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+
+<style>
+    /* Glassmorphic Panels */
+    .glass-panel {
+        background: rgba(15, 23, 42, 0.72);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 20px 45px -12px rgba(0, 0, 0, 0.55);
+        transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .kpi-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Icon Bubbles */
+    .icon-bubble {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        font-size: 1.4rem;
+    }
+
+    .bubble-primary {
+        background: rgba(59, 130, 246, 0.15);
+        color: #60a5fa;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .bubble-success {
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .bubble-danger {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .bubble-warning {
+        background: rgba(234, 179, 8, 0.15);
+        color: #facc15;
+        border: 1px solid rgba(234, 179, 8, 0.3);
+    }
+
+    /* Live Feed Item */
+    .activity-row {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        transition: background-color 0.15s ease;
+    }
+
+    .activity-row:hover {
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    .pulse-badge {
+        background: rgba(34, 197, 94, 0.15);
+        border: 1px solid rgba(34, 197, 94, 0.35);
+        color: #4ade80;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+    }
+
+    /* Responsive Spacing */
+    @@media (max-width: 767.98px) {
+        .dashboard-container {
+            padding-left: 12px !important;
+            padding-right: 12px !important;
+        }
+
+        .chart-container-trend {
+            height: 220px !important;
+        }
+
+        .chart-container-dept {
+            height: 190px !important;
+        }
+    }
+</style>
+
+<div class="container-fluid py-4 px-3 px-md-4 dashboard-container">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold text-white mb-1">Live Dashboard Reports</h4>
+            <div class="small text-muted">Real-time biometric attendance and employee workforce metrics</div>
+        </div>
+        <a asp-controller="LiveAttendance" asp-action="Index" class="btn btn-outline-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); color: #93c5fd;">
+            <i class="bi bi-camera-video"></i> Live Gate
+        </a>
+    </div>
+
+    <!-- Top KPI Row -->
+    <div class="row g-3 mb-4">
+        <!-- Total Employees -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="glass-panel kpi-card p-3 p-md-4 h-100">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small fw-medium">Total Employees</div>
+                        <h3 class="fw-bold text-white mt-1 mb-0">@Model.TotalEmployees</h3>
+                    </div>
+                    <div class="icon-bubble bubble-primary">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Present Today -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="glass-panel kpi-card p-3 p-md-4 h-100">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small fw-medium">Present Today</div>
+                        <h3 class="fw-bold text-success mt-1 mb-0" id="dashPresentCount">@Model.PresentToday</h3>
+                        <small class="text-success fw-semibold">@Model.PresentPercentage% Rate</small>
+                    </div>
+                    <div class="icon-bubble bubble-success">
+                        <i class="bi bi-person-check-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Absent Today -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="glass-panel kpi-card p-3 p-md-4 h-100">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small fw-medium">Absent Today</div>
+                        <h3 class="fw-bold text-danger mt-1 mb-0" id="dashAbsentCount">@Model.AbsentToday</h3>
+                    </div>
+                    <div class="icon-bubble bubble-danger">
+                        <i class="bi bi-person-x-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Late Arrivals -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="glass-panel kpi-card p-3 p-md-4 h-100">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small fw-medium">Late Arrivals</div>
+                        <h3 class="fw-bold text-warning mt-1 mb-0">@Model.LateArrivals</h3>
+                    </div>
+                    <div class="icon-bubble bubble-warning">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics and Live Feed Grid -->
+    <div class="row g-4">
+        <!-- Visual Charts Column -->
+        <div class="col-12 col-lg-8">
+            <div class="glass-panel p-3 p-md-4 mb-4">
+                <h6 class="fw-bold text-white mb-3">Attendance Overview (This Week)</h6>
+                <div class="chart-container-trend" style="height: 280px; position: relative;">
+                    <canvas id="weeklyTrendsChart"></canvas>
+                </div>
+            </div>
+
+            <div class="glass-panel p-3 p-md-4">
+                <h6 class="fw-bold text-white mb-3">Department Headcount Distribution</h6>
+                <div class="chart-container-dept" style="height: 220px; position: relative;">
+                    <canvas id="deptChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-Time Activity Feed -->
+        <div class="col-12 col-lg-4">
+            <div class="glass-panel p-3 p-md-4 h-100 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary border-opacity-25">
+                    <h6 class="fw-bold text-white mb-0">Recent Activities</h6>
+                    <span class="badge pulse-badge rounded-pill px-2 py-1">LIVE</span>
+                </div>
+
+                <div class="d-flex flex-column gap-2 overflow-auto" id="dashActivityList" style="max-height: 540px;">
+                    @foreach (var act in Model.RecentActivities)
+                    {
+                        <div class="d-flex align-items-center justify-content-between py-2 px-2 rounded-3 activity-row">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-circle bubble-primary fw-bold d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; font-size: 0.85rem;">
+                                    @(string.IsNullOrEmpty(act.FullName) ? "U" : act.FullName.Substring(0, 1).ToUpper())
+                                </div>
+                                <div>
+                                    <div class="fw-semibold small text-white">@act.FullName</div>
+                                    <div class="text-muted" style="font-size: 0.75rem;">@act.Action</div>
+                                </div>
+                            </div>
+                            <span class="text-muted small" style="font-size: 0.75rem;">@act.TimeString</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. Weekly Trends Line Chart
+    const trendCtx = document.getElementById('weeklyTrendsChart').getContext('2d');
+    new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Attendance',
+                data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.WeeklyAttendanceTrends)),
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                borderWidth: 2.5,
+                tension: 0.35,
+                fill: true,
+                pointBackgroundColor: '#60a5fa',
+                pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    ticks: { color: '#94a3b8' }
+                },
+                y: {
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    ticks: { color: '#94a3b8' }
+                }
+            },
+            plugins: {
+                legend: { labels: { color: '#cbd5e1' } }
+            }
+        }
+    });
+
+    // 2. Department Breakdown Bar Chart
+    const deptCtx = document.getElementById('deptChart').getContext('2d');
+    new Chart(deptCtx, {
+        type: 'bar',
+        data: {
+            labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.DepartmentWiseCount.Keys)),
+            datasets: [{
+                label: 'Headcount',
+                data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.DepartmentWiseCount.Values)),
+                backgroundColor: 'rgba(59, 130, 246, 0.65)',
+                borderColor: '#3b82f6',
+                borderWidth: 1,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#94a3b8' }
+                },
+                y: {
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    ticks: { color: '#94a3b8', precision: 0 }
+                }
+            },
+            plugins: {
+                legend: { labels: { color: '#cbd5e1' } }
+            }
+        }
+    });
+
+    // 3. SignalR Real-Time Event Sync
+    const dashHub = new signalR.HubConnectionBuilder()
+        .withUrl("/attendanceHub")
+        .withAutomaticReconnect()
+        .build();
+
+    dashHub.on("ReceiveAttendanceUpdate", function(data) {
+        const pres = document.getElementById("dashPresentCount");
+        const abs = document.getElementById("dashAbsentCount");
+        if (pres && data.presentCount) pres.innerText = data.presentCount;
+        if (abs && data.absentCount) abs.innerText = data.absentCount;
+
+        const list = document.getElementById("dashActivityList");
+        if (list) {
+            const row = document.createElement("div");
+            row.className = "d-flex align-items-center justify-content-between py-2 px-2 rounded-3 activity-row";
+            row.innerHTML = `
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-circle bubble-success fw-bold d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; font-size: 0.85rem;">
+                        ${(data.fullName ? data.fullName.charAt(0).toUpperCase() : 'U')}
+                    </div>
+                    <div>
+                        <div class="fw-semibold small text-white">${data.fullName}</div>
+                        <div class="text-muted" style="font-size: 0.75rem;">marked ${data.status}</div>
+                    </div>
+                </div>
+                <span class="text-muted small" style="font-size: 0.75rem;">${data.time}</span>
+            `;
+            list.insertBefore(row, list.firstChild);
+        }
+    });
+
+    dashHub.start().catch(console.error);
+</script>
