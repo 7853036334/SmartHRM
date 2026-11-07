@@ -1,10 +1,11 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Graph.Models;
 using SmartHRM.DataAccess;
 using SmartHRM.DataAccess.Entities;
+using System.Security.Claims;
 
 namespace SmartHRM.Presentation.Controllers;
 
@@ -38,20 +39,20 @@ public class AccountController : Controller
             return View(model);
         }
 
-        // Verify credentials against the Employee database
+       
         var employee = await _context.Employees
             .FirstOrDefaultAsync(e => e.Email.ToLower() == model.Email.ToLower().Trim() && e.IsActive);
 
-        // Verification logic (password check)
-        bool isPasswordValid = employee != null && (model.Password == "logix@2648" || model.Password == "password");
-
+       
+        bool isPasswordValid = employee != null && (model.Password == "Logix@2648" || model.Password == "password");
+   
         if (employee == null || !isPasswordValid)
         {
             ModelState.AddModelError(string.Empty, "Invalid email or password.");
             return View(model);
         }
 
-        // Configure claims for cookie identity
+        
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, employee.Id.ToString()),

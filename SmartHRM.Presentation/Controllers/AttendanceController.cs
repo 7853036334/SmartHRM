@@ -16,14 +16,13 @@ public class AttendanceController : Controller
         _context = context;
     }
 
-    // GET: /Attendance or /Attendance/Index
     [HttpGet]
     public IActionResult Index(DateTime? startDate, DateTime? endDate, string? department, string? status)
     {
         return RedirectToAction(nameof(Reports), new { startDate, endDate, department, status });
     }
 
-    // GET: /Attendance/Reports
+    
     [HttpGet]
     public async Task<IActionResult> Reports(DateTime? startDate, DateTime? endDate, string? department, string? status)
     {
@@ -58,7 +57,7 @@ public class AttendanceController : Controller
         return View("Reports", logs);
     }
 
-    // GET: /Attendance/ExportToExcel
+    
     [HttpGet]
     public async Task<IActionResult> ExportToExcel(DateTime? startDate, DateTime? endDate, string? department, string? status)
     {
@@ -88,7 +87,7 @@ public class AttendanceController : Controller
         using var workbook = new XLWorkbook();
         var worksheet = workbook.Worksheets.Add("Attendance Logs");
 
-        // Table Header Definitions
+       
         worksheet.Cell(1, 1).Value = "Employee Code";
         worksheet.Cell(1, 2).Value = "Full Name";
         worksheet.Cell(1, 3).Value = "Department";
@@ -98,13 +97,13 @@ public class AttendanceController : Controller
         worksheet.Cell(1, 7).Value = "Status";
         worksheet.Cell(1, 8).Value = "Working Hours";
 
-        // Style the Header Row
+        
         var headerRow = worksheet.Row(1);
         headerRow.Style.Font.Bold = true;
         headerRow.Style.Fill.BackgroundColor = XLColor.FromHtml("#E2E8F0");
         headerRow.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-        // Populate Table Records
+       
         for (int i = 0; i < logs.Count; i++)
         {
             var log = logs[i];

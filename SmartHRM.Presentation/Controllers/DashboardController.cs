@@ -31,14 +31,15 @@ public class DashboardController : Controller
         var absentCount = Math.Max(0, totalEmployees - presentCount);
         var lateCount = todayLogs.Count(a => a.Status == "Late");
 
-        // Department-wise distribution
+        
         var deptStats = await _context.Employees
             .Where(e => e.IsActive && !string.IsNullOrEmpty(e.Department))
             .GroupBy(e => e.Department!)
             .Select(g => new { Department = g.Key, Count = g.Count() })
             .ToDictionaryAsync(x => x.Department, x => x.Count);
 
-        // Recent real-time activities for the stream list
+       
+
         var recentActivities = todayLogs
      .OrderByDescending(a => a.TimeIn)
      .Take(5)
@@ -48,7 +49,7 @@ public class DashboardController : Controller
          Action = $"marked {a.Status}",
          TimeString = a.TimeIn.HasValue
              ? DateTime.Today.Add(a.TimeIn.Value).ToString("hh:mm tt")
-             : "--:--",
+             : "--:--", 
          PhotoPath = a.Employee?.PhotoPath
      })
      .ToList();

@@ -1,0 +1,619 @@
+﻿@model SmartHRM.DataAccess.Entities.Employee
+
+@{
+    ViewData["Title"] = "Edit Employee";
+}
+
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+<style>
+    .employee-edit-page {
+        min-height: 100vh;
+        padding: 25px 30px;
+    }
+
+    .glass-panel {
+        background: rgba(15, 23, 42, 0.72);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 20px;
+        box-shadow: 0 20px 45px -12px rgba(0, 0, 0, 0.55);
+    }
+
+    .page-title {
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .page-subtitle {
+        color: #94a3b8;
+        font-size: 13px;
+    }
+
+    .form-section {
+        padding: 22px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .form-section:last-child {
+        border-bottom: none;
+    }
+
+    .section-title {
+        color: #ffffff;
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 18px;
+    }
+
+    .section-title i {
+        color: #3b82f6;
+    }
+
+    .form-label {
+        color: #cbd5e1;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+
+    .glass-input {
+        background: rgba(255, 255, 255, 0.06) !important;
+        border: 1px solid rgba(255, 255, 255, 0.14) !important;
+        color: #f1f5f9 !important;
+        border-radius: 10px !important;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+    }
+
+    .glass-input:focus {
+        background: rgba(255, 255, 255, 0.12) !important;
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+        color: #ffffff !important;
+    }
+
+    .glass-input::placeholder {
+        color: #64748b !important;
+    }
+
+    .glass-input option {
+        background: #0f172a;
+        color: #f8fafc;
+    }
+
+    textarea.glass-input {
+        resize: vertical;
+        min-height: 110px;
+    }
+
+    .readonly-input {
+        background: rgba(148, 163, 184, 0.08) !important;
+        color: #94a3b8 !important;
+        cursor: not-allowed;
+    }
+
+    .validation-text {
+        font-size: 11px;
+        margin-top: 4px;
+    }
+
+    .validation-summary {
+        background: rgba(239, 68, 68, 0.10);
+        border: 1px solid rgba(239, 68, 68, 0.30);
+        color: #fca5a5;
+        border-radius: 10px;
+        font-size: 13px;
+    }
+
+    .status-box {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 12px;
+        padding: 13px 15px;
+    }
+
+    .status-description {
+        color: #64748b;
+        font-size: 11px;
+        margin-top: 7px;
+        display: block;
+    }
+
+    .form-check-input {
+        width: 42px;
+        height: 22px;
+        background-color: rgba(255, 255, 255, 0.10);
+        border: 1px solid rgba(255, 255, 255, 0.20);
+        cursor: pointer;
+    }
+
+    .form-check-input:checked {
+        background-color: #2563eb;
+        border-color: #2563eb;
+    }
+
+    .form-check-input:focus {
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.20);
+        border-color: #3b82f6;
+    }
+
+    .form-check-label {
+        margin-left: 8px;
+        color: #cbd5e1;
+        cursor: pointer;
+    }
+
+    .text-success {
+        color: #4ade80 !important;
+    }
+
+    .text-danger {
+        color: #f87171 !important;
+    }
+
+    .btn-glow-primary {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        border: none;
+        color: #ffffff;
+        font-weight: 600;
+        border-radius: 10px;
+        transition: all 0.25s ease;
+        box-shadow: 0 8px 18px -4px rgba(37, 99, 235, 0.45);
+    }
+
+    .btn-glow-primary:hover {
+        background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+        box-shadow: 0 12px 22px -4px rgba(37, 99, 235, 0.65);
+        color: #ffffff;
+        transform: translateY(-1px);
+    }
+
+    .btn-glass-secondary {
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        color: #93c5fd;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .btn-glass-secondary:hover {
+        background: rgba(255, 255, 255, 0.14);
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.30);
+    }
+
+    .edit-header {
+        padding: 20px 22px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+        background: rgba(255, 255, 255, 0.035);
+    }
+
+    .employee-id-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 10px;
+        background: rgba(59, 130, 246, 0.12);
+        border: 1px solid rgba(59, 130, 246, 0.25);
+        border-radius: 20px;
+        color: #93c5fd;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    @@media (max-width: 991.98px) {
+        .employee-edit-page {
+            padding: 20px;
+        }
+    }
+
+    @@media (max-width: 767.98px) {
+        .employee-edit-page {
+            padding: 15px 10px;
+        }
+
+        .page-title {
+            font-size: 21px;
+        }
+
+        .page-subtitle {
+            font-size: 12px;
+        }
+
+        .edit-header {
+            padding: 17px;
+        }
+
+        .form-section {
+            padding: 17px;
+        }
+
+        .form-buttons {
+            flex-direction: column-reverse;
+            gap: 10px;
+        }
+
+        .form-buttons a,
+        .form-buttons button {
+            width: 100%;
+        }
+    }
+
+    @@media (max-width: 575.98px) {
+        .employee-edit-page {
+            padding: 12px 8px;
+        }
+
+        .glass-panel {
+            border-radius: 15px;
+        }
+    }
+</style>
+
+<div class="employee-edit-page">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h4 class="page-title">
+                Edit Employee
+            </h4>
+
+            <div class="page-subtitle">
+                Update employee information and account status
+            </div>
+        </div>
+
+        <span class="employee-id-badge">
+            <i class="bi bi-person-badge"></i>
+            Employee #@Model.Id
+        </span>
+
+    </div>
+
+    <div class="glass-panel">
+
+        <div class="edit-header">
+
+            <div class="d-flex align-items-center gap-2">
+
+                <i class="bi bi-person-gear text-primary fs-5"></i>
+
+                <div>
+                    <div class="fw-semibold text-white">
+                        Employee Information
+                    </div>
+
+                    <div class="small text-muted">
+                        Edit the employee details below
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <form asp-controller="Employee"
+              asp-action="Edit"
+              asp-route-id="@Model.Id"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden"
+                   asp-for="Id" />
+
+            <div asp-validation-summary="All"
+                 class="validation-summary m-3 p-3"
+                 role="alert">
+            </div>
+
+            <div class="form-section">
+
+                <div class="section-title">
+                    <i class="bi bi-person-vcard me-2"></i>
+                    Basic Information
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label asp-for="EmployeeCode"
+                               class="form-label">
+                            Employee Code
+                        </label>
+
+                        <input asp-for="EmployeeCode"
+                               class="form-control glass-input readonly-input"
+                               readonly pattern="(?=.*[A-Z])(?=.*[0-9]){8}"/>
+
+                        <span asp-validation-for="EmployeeCode"
+                              class="text-danger validation-text">
+                        </span>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label asp-for="FullName"
+                               class="form-label">
+                            Full Name
+                        </label>
+
+                        <input asp-for="FullName"
+                               class="form-control glass-input"
+                               placeholder="Enter full name" pattern="[A-Z][a-z]+[A-Z][a-z]+{5,}"/>
+
+                        <span asp-validation-for="FullName"
+                              class="text-danger validation-text">
+                        </span>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label asp-for="Email"
+                               class="form-label">
+                            Email
+                        </label>
+
+                        <input asp-for="Email"
+                               type="email"
+                               class="form-control glass-input"
+                               placeholder="Enter email address" />
+
+                        <span asp-validation-for="Email"
+                              class="text-danger validation-text">
+                        </span>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label asp-for="Phone"
+                               class="form-label">
+                            Phone
+                        </label>
+
+                        <input asp-for="Phone"
+                               type="tel"
+                               class="form-control glass-input"
+                               placeholder="Enter phone number" pattern="[6-9][0-9]{9}"/>
+
+                        <span asp-validation-for="Phone"
+                              class="text-danger validation-text">
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="form-section">
+
+                <div class="section-title">
+                    <i class="bi bi-building me-2"></i>
+                    Job Information
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label asp-for="Department"
+                               class="form-label">
+                            Department
+                        </label>
+
+                        <input asp-for="Department"
+                               class="form-control glass-input"
+                               placeholder="Enter department" pattern="[A-Z][a-z]{1,}"/>
+
+                        <span asp-validation-for="Department"
+                              class="text-danger validation-text">
+                        </span>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label asp-for="Designation"
+                               class="form-label">
+                            Designation
+                        </label>
+
+                        <input asp-for="Designation"
+                               class="form-control glass-input"
+                               placeholder="Enter designation" pattern="[A-Z][a-z]+[A-Z][a-z]+{2,}" />
+
+                        <span asp-validation-for="Designation"
+                              class="text-danger validation-text">
+                        </span>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label asp-for="JoiningDate"
+                               class="form-label">
+                            Joining Date
+                        </label>
+
+                        <input asp-for="JoiningDate"
+                               type="date"
+                               class="form-control glass-input" />
+
+                        <span asp-validation-for="JoiningDate"
+                              class="text-danger validation-text">
+                        </span>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Employee Status
+                        </label>
+
+                        <div class="status-box">
+
+                            <div class="form-check form-switch mt-1">
+
+                                <input asp-for="IsActive"
+                                       class="form-check-input"
+                                       type="checkbox"
+                                       role="switch"
+                                       id="IsActive" />
+
+                                <label class="form-check-label"
+                                       for="IsActive">
+
+                                    @if (Model.IsActive)
+                                    {
+                                        <span class="text-success fw-semibold">
+                                            Active
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger fw-semibold">
+                                            Inactive
+                                        </span>
+                                    }
+
+                                </label>
+
+                            </div>
+
+                            <small class="status-description">
+                                Turn this off to make the employee inactive.
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="form-section">
+
+                <div class="section-title">
+                    <i class="bi bi-person-lines-fill me-2"></i>
+                    Personal Information
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label asp-for="Gender"
+                               class="form-label">
+                            Gender
+                        </label>
+
+                        <select asp-for="Gender"
+                                class="form-select glass-input">
+
+                            <option value="">
+                                Select Gender
+                            </option>
+
+                            <option value="Male">
+                                Male
+                            </option>
+
+                            <option value="Female">
+                                Female
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                        <span asp-validation-for="Gender"
+                              class="text-danger validation-text">
+                        </span>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label asp-for="DateOfBirth"
+                               class="form-label">
+                            Date of Birth
+                        </label>
+
+                        <input asp-for="DateOfBirth"
+                               type="date"
+                               class="form-control glass-input" />
+
+                        <span asp-validation-for="DateOfBirth"
+                              class="text-danger validation-text">
+                        </span>
+
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+
+                        <label asp-for="Address"
+                               class="form-label">
+                            Address
+                        </label>
+
+                        <textarea asp-for="Address"
+                                  class="form-control glass-input"
+                                  rows="4"
+                                  placeholder="Enter employee address" pattern="[A-Z][a-z]+[A-Z][a-z]+{2,}"></textarea>
+
+                        <span asp-validation-for="Address"
+                              class="text-danger validation-text">
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="form-section">
+
+                <div class="form-buttons d-flex justify-content-between align-items-center">
+
+                    <a asp-controller="Employee"
+                       asp-action="Index"
+                       class="btn btn-glass-secondary px-4 py-2">
+
+                        <i class="bi bi-arrow-left me-1"></i>
+                        Back
+
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-glow-primary px-4 py-2">
+
+                        <i class="bi bi-check-circle me-1"></i>
+                        Update Employee
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>

@@ -1,6 +1,6 @@
 ﻿@model SmartHRM.DataAccess.Entities.LoginViewModel
 @{
-    ViewData["Title"] = "Login - Smart HRM";
+    ViewData["Title"] = "Login Smart HRM";
     Layout = null;
 }
 
@@ -12,6 +12,7 @@
     <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+     <link rel="icon" type="image/png" href="~/videos/icon.png" />
     <style>
             * {
                 margin: 0;
@@ -31,7 +32,7 @@
                 background-color: #030712;
             }
 
-            /* Fullscreen Video */
+            
             .video-bg {
                 position: fixed;
                 top: 50%;
@@ -45,7 +46,7 @@
                 z-index: -2;
             }
 
-            /* Subtle Dark Tint with Blur */
+           
             .video-overlay {
                 position: fixed;
                 top: 0;
@@ -57,7 +58,6 @@
                 z-index: -1;
             }
 
-            /* Centered Glassmorphism Card */
             .login-card {
                 width: 100%;
                 max-width: 440px;
@@ -232,15 +232,14 @@
 </head>
 <body>
 
-    <!-- Background Video -->
+  
     <video class="video-bg" autoplay muted loop playsinline>
-        <source src="~/videos/face-attendance-bg.mp4" type="video/mp4" />
+        <source src="~/videos/wmremove-transformed.mp4" type="video/mp4" />
     </video>
 
-    <!-- Dark Overlay Filter -->
     <div class="video-overlay"></div>
 
-    <!-- Centered Glass Login Card -->
+   
     <div class="login-card">
         <div class="brand-header">
             <div class="brand-icon">
@@ -256,7 +255,7 @@
             @if (!ViewData.ModelState.IsValid)
             {
                 <div class="alert alert-danger py-2 mb-3 bg-danger bg-opacity-25 border-danger border-opacity-50 text-white" style="font-size: 0.85rem; border-radius: 10px;">
-                    <span asp-validation-summary="All"></span>
+                    <span asp-validation-summary="All">Provided Email or Password not match</span>
                 </div>
             }
 
@@ -264,19 +263,19 @@
                 <label class="form-label" asp-for="Email">Email Address</label>
                 <div class="input-group-custom">
                     <i class="bi bi-envelope-fill input-icon-left"></i>
-                    <input asp-for="Email" type="email" placeholder="email" required autofocus />
+                    <input asp-for="Email" type="email" placeholder="email" required autofocus >
                 </div>
             </div>
-
+           
             <div class="mb-2">
                 <label class="form-label" asp-for="Password">Password</label>
                 <div class="input-group-custom">
                     <i class="bi bi-key-fill input-icon-left"></i>
-                    <input asp-for="Password" id="passwordInput" type="password" placeholder="••••••••••••" required />
+                    <input asp-for="Password" id="passwordInput" type="password" placeholder="Password" required pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*[%@@&!])(?=.*[0-9]).{8,}" />
                     <i class="bi bi-eye password-toggle" id="togglePassword"></i>
                 </div>
             </div>
-
+             
             <div class="form-options">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" asp-for="RememberMe" id="rememberMe">
@@ -290,7 +289,6 @@
             <button type="submit" class="btn-login">Sign In</button>
         </form>
     </div>
-
     <script>
             const togglePassword = document.getElementById('togglePassword');
             const passwordInput = document.getElementById('passwordInput');
@@ -301,6 +299,11 @@
                 this.classList.toggle('bi-eye');
                 this.classList.toggle('bi-eye-slash');
             });
+
+            if(!passwordInput||!togglePassword){
+                alert("Please provide the corsponding Email or Password to login.");
+                return;
+            }
     </script>
 
 </body>

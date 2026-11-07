@@ -31,7 +31,7 @@ namespace SmartHRM.Presentation.Controllers
             return View(logs);
         }
 
-        // Endpoint consumed by Python to cache active face models
+       
         [HttpGet]
         public async Task<IActionResult> GetKnownEmbeddings()
         {
@@ -71,7 +71,7 @@ namespace SmartHRM.Presentation.Controllers
             return Ok(payload);
         }
 
-        // DTO for Python attendance push
+        
         public class DetectionPayload
         {
             public int EmployeeId { get; set; }
@@ -110,7 +110,7 @@ namespace SmartHRM.Presentation.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            // Calculate present and absent counts for today
+            
             var presentCount = await _context.AttendanceLogs
                 .Where(a => a.Date == today && a.Status == "Present")
                 .Select(a => a.EmployeeId)
@@ -120,7 +120,7 @@ namespace SmartHRM.Presentation.Controllers
             var totalEmployees = await _context.Employees.CountAsync(e => e.IsActive);
             var absentCount = Math.Max(0, totalEmployees - presentCount);
 
-            // Broadcast to Razor UI via SignalR
+           
             await _hubContext.Clients.All.SendAsync("ReceiveAttendanceUpdate", new
             {
                 fullName = employee.FullName,

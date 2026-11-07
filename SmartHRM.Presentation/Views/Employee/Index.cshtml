@@ -1,33 +1,83 @@
 ﻿@model IEnumerable<SmartHRM.DataAccess.Entities.Employee>
+
 @{
     ViewData["Title"] = "Employees";
 }
 
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
 <style>
-    /* Glassmorphism Containers */
-    .glass-panel {
-        background: rgba(15, 23, 42, 0.72);
-        backdrop-filter: blur(18px);
-        -webkit-backdrop-filter: blur(18px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 20px;
-        box-shadow: 0 20px 45px -12px rgba(0, 0, 0, 0.55);
+
+  
+
+    .employee-page {
+        min-height: 100vh;
+        padding: 25px 30px;
     }
 
-    /* Form Controls */
+
+ 
+
+    .glass-panel {
+        background: rgba(15, 23, 42, 0.72);
+
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+
+        border: 1px solid rgba(255, 255, 255, 0.10);
+
+        border-radius: 20px;
+
+        box-shadow:
+            0 20px 45px -12px rgba(0, 0, 0, 0.55);
+            width:100%;
+    }
+
+
+
+
+    .page-title {
+        color: #ffffff;
+
+        font-size: 24px;
+
+        font-weight: 700;
+
+        margin-bottom: 4px;
+    }
+
+    .page-subtitle {
+        color: #94a3b8;
+
+        font-size: 13px;
+    }
+
+
+  
+
     .glass-input {
         background: rgba(255, 255, 255, 0.06) !important;
+
         border: 1px solid rgba(255, 255, 255, 0.14) !important;
+
         color: #f1f5f9 !important;
+
         border-radius: 10px !important;
+
         font-size: 0.9rem;
+
         transition: all 0.2s ease;
     }
 
     .glass-input:focus {
         background: rgba(255, 255, 255, 0.12) !important;
+
         border-color: #3b82f6 !important;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+
+        box-shadow:
+            0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+
         color: #ffffff !important;
     }
 
@@ -37,344 +87,1137 @@
 
     .glass-input option {
         background: #0f172a;
+
         color: #f8fafc;
     }
 
-    /* Buttons */
+
+ 
+
     .btn-glow-primary {
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+
+        background:
+            linear-gradient(
+                135deg,
+                #2563eb 0%,
+                #1d4ed8 100%
+            );
+
         border: none;
+
         color: #ffffff;
+
         font-weight: 600;
+
         border-radius: 10px;
+
         transition: all 0.25s ease;
-        box-shadow: 0 8px 18px -4px rgba(37, 99, 235, 0.45);
-        white-space: nowrap;
+
+        box-shadow:
+            0 8px 18px -4px
+            rgba(37, 99, 235, 0.45);
     }
 
     .btn-glow-primary:hover {
-        background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
-        box-shadow: 0 12px 22px -4px rgba(37, 99, 235, 0.65);
+
+        background:
+            linear-gradient(
+                135deg,
+                #1d4ed8 0%,
+                #1e40af 100%
+            );
+
+        box-shadow:
+            0 12px 22px -4px
+            rgba(37, 99, 235, 0.65);
+
         color: #ffffff;
+
         transform: translateY(-1px);
     }
 
+
+    
+
     .btn-glass-secondary {
+
         background: rgba(255, 255, 255, 0.07);
+
         border: 1px solid rgba(255, 255, 255, 0.16);
+
         color: #93c5fd;
+
         border-radius: 10px;
+
         font-weight: 500;
+
         transition: all 0.2s ease;
-        white-space: nowrap;
     }
 
     .btn-glass-secondary:hover {
+
         background: rgba(255, 255, 255, 0.14);
+
         color: #ffffff;
-        border-color: rgba(255, 255, 255, 0.3);
+
+        border-color:
+            rgba(255, 255, 255, 0.30);
     }
 
-    /* Table Styles */
-    .table-glass {
-        color: #cbd5e1;
-        margin-bottom: 0;
-    }
 
-    .table-glass thead tr {
-        background: rgba(255, 255, 255, 0.04);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
+    /* =========================================================
+       SEARCH SECTION
+    ========================================================= */
 
-    .table-glass th {
-        color: #94a3b8;
-        font-size: 0.75rem;
-        letter-spacing: 0.06em;
+    .search-title {
+
+        color: #ffffff;
+
+        font-size: 14px;
+
         font-weight: 600;
-        padding-top: 16px;
-        padding-bottom: 16px;
+
+        margin-bottom: 15px;
+    }
+
+    .search-label {
+
+        color: #cbd5e1;
+
+        font-size: 12px;
+
+        font-weight: 600;
+
+        margin-bottom: 5px;
+    }
+
+
+ 
+
+    .employee-table-panel {
+
+        overflow: hidden;
+    }
+
+
+    
+
+    .table-heading {
+
+        padding: 18px 20px;
+
+        background:
+            rgba(255, 255, 255, 0.035);
+
+        border-bottom:
+            1px solid rgba(255, 255, 255, 0.10);
+    }
+
+    .table-heading h5 {
+
+        color: #ffffff;
+
+        font-size: 15px;
+
+        font-weight: 600;
+
+        margin: 0;
+    }
+
+    .employee-count {
+
+        color: #64748b;
+
+        font-size: 12px;
+    }
+
+
+
+
+    .table-wrapper {
+
+        width: 100%;
+
+        overflow-x: auto;
+    }
+
+    .employee-table {
+
+        width: 100%;
+
+        min-width: 1100px;
+
+        margin: 0;
+
+        border-collapse: collapse;
+
+        color: #cbd5e1;
+    }
+
+
+ 
+
+    .employee-table thead {
+
+        background:
+            rgba(255, 255, 255, 0.04);
+    }
+
+    .employee-table thead th {
+
+        padding: 15px 16px;
+
+        color: #94a3b8;
+
+        font-size: 11px;
+
+        font-weight: 600;
+
+        letter-spacing: 0.06em;
+
+        text-transform: uppercase;
+
+        border-bottom:
+            1px solid rgba(255, 255, 255, 0.10);
+
         white-space: nowrap;
     }
 
-    .table-glass tbody tr {
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        transition: background-color 0.15s ease;
+
+    
+
+    .employee-table tbody tr {
+
+        background:
+            rgba(15, 23, 42, 0.40);
+
+        transition:
+            background-color 0.2s ease;
     }
 
-    .table-glass tbody tr:hover {
-        background-color: rgba(255, 255, 255, 0.04);
+    .employee-table tbody tr:hover {
+
+        background:
+            rgba(255, 255, 255, 0.045);
     }
 
-    .table-glass td {
-        padding-top: 14px;
-        padding-bottom: 14px;
+    .employee-table tbody tr:last-child td {
+
+        border-bottom: none;
+    }
+
+    .employee-table tbody td {
+
+        padding: 14px 16px;
+
+        color: #cbd5e1;
+
+        font-size: 13px;
+
         vertical-align: middle;
+
+        border-bottom:
+            1px solid rgba(255, 255, 255, 0.05);
+
         white-space: nowrap;
     }
 
-    /* Badges & Avatars */
-    .avatar-bubble {
-        width: 42px;
-        height: 42px;
-        border-radius: 12px;
-        background: rgba(59, 130, 246, 0.18);
-        border: 1px solid rgba(59, 130, 246, 0.35);
-        color: #60a5fa;
-        font-weight: 700;
-        display: flex;
+
+   
+
+    .employee-name {
+
+        color: #ffffff;
+
+        font-size: 14px;
+
+        font-weight: 600;
+    }
+
+    .employee-code {
+
+        color: #64748b;
+
+        font-size: 11px;
+
+        margin-top: 3px;
+    }
+
+    .employee-email {
+
+        color: #94a3b8;
+
+        font-size: 12px;
+    }
+
+
+    /* =========================================================
+       DEPARTMENT
+    ========================================================= */
+
+    .department-badge {
+
+        display: inline-flex;
+
         align-items: center;
+
+        padding: 5px 10px;
+
+        background:
+            rgba(148, 163, 184, 0.12);
+
+        border:
+            1px solid rgba(148, 163, 184, 0.25);
+
+        border-radius: 20px;
+
+        color: #94a3b8;
+
+        font-size: 11px;
+
+        font-weight: 600;
+    }
+
+
+    /* =========================================================
+       DESIGNATION
+    ========================================================= */
+
+    .designation-text {
+
+        color: #e2e8f0;
+
+        font-size: 13px;
+
+        font-weight: 500;
+    }
+
+
+    /* =========================================================
+       DATE
+    ========================================================= */
+
+    .joining-date {
+
+        color: #94a3b8;
+
+        font-size: 12px;
+    }
+
+
+
+
+    .status-btn {
+
+        min-width: 88px;
+
+        height: 32px;
+
+        padding: 0 11px;
+
+        border-radius: 8px;
+
+        display: inline-flex;
+
+        align-items: center;
+
         justify-content: center;
-        flex-shrink: 0;
+
+        gap: 5px;
+
+        font-size: 11px;
+
+        font-weight: 600;
+
+        cursor: pointer;
+
+        transition: all 0.2s ease;
     }
 
-    .avatar-img {
-        width: 42px;
-        height: 42px;
-        border-radius: 12px;
-        object-fit: cover;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        flex-shrink: 0;
-    }
 
-    .badge-dept {
-        background: rgba(148, 163, 184, 0.12);
-        color: #94a3b8;
-        border: 1px solid rgba(148, 163, 184, 0.25);
-    }
+    /* ACTIVE */
 
-    .badge-active {
-        background: rgba(34, 197, 94, 0.16);
+    .status-active {
+
+        background:
+            rgba(34, 197, 94, 0.16);
+
+        border:
+            1px solid rgba(34, 197, 94, 0.35);
+
         color: #4ade80;
-        border: 1px solid rgba(34, 197, 94, 0.35);
     }
 
-    .badge-inactive {
-        background: rgba(148, 163, 184, 0.14);
+    .status-active:hover {
+
+        background:
+            rgba(34, 197, 94, 0.30);
+
+        border-color:
+            rgba(34, 197, 94, 0.60);
+
+        color: #ffffff;
+    }
+
+
+ 
+
+    .status-inactive {
+
+        background:
+            rgba(148, 163, 184, 0.14);
+
+        border:
+            1px solid rgba(148, 163, 184, 0.30);
+
         color: #94a3b8;
-        border: 1px solid rgba(148, 163, 184, 0.25);
     }
 
-    /* Responsive Views */
+    .status-inactive:hover {
+
+        background:
+            rgba(148, 163, 184, 0.25);
+
+        border-color:
+            rgba(148, 163, 184, 0.50);
+
+        color: #ffffff;
+    }
+
+
+
+    .action-container {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 7px;
+    }
+
+    .action-btn {
+
+        height: 32px;
+
+        padding: 0 11px;
+
+        border-radius: 8px;
+
+        display: inline-flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        gap: 5px;
+
+        font-size: 11px;
+
+        font-weight: 600;
+
+        text-decoration: none;
+
+        white-space: nowrap;
+
+        cursor: pointer;
+
+        transition: all 0.2s ease;
+    }
+
+
+    /* EDIT */
+
+    .action-edit {
+
+        background:
+            rgba(59, 130, 246, 0.15);
+
+        border:
+            1px solid rgba(59, 130, 246, 0.35);
+
+        color: #60a5fa;
+    }
+
+    .action-edit:hover {
+
+        background:
+            rgba(59, 130, 246, 0.30);
+
+        border-color:
+            rgba(59, 130, 246, 0.60);
+
+        color: #ffffff;
+
+        transform: translateY(-1px);
+    }
+
+
+    /* DELETE */
+
+    .action-delete {
+
+        background:
+            rgba(239, 68, 68, 0.15);
+
+        border:
+            1px solid rgba(239, 68, 68, 0.35);
+
+        color: #f87171;
+    }
+
+    .action-delete:hover {
+
+        background:
+            rgba(239, 68, 68, 0.30);
+
+        border-color:
+            rgba(239, 68, 68, 0.60);
+
+        color: #ffffff;
+
+        transform: translateY(-1px);
+    }
+
+
+
+    .action-gate {
+
+        background:
+            rgba(168, 85, 247, 0.14);
+
+        border:
+            1px solid rgba(168, 85, 247, 0.30);
+
+        color: #c084fc;
+    }
+
+    .action-gate:hover {
+
+        background:
+            rgba(168, 85, 247, 0.25);
+
+        border-color:
+            rgba(168, 85, 247, 0.50);
+
+        color: #ffffff;
+
+        transform: translateY(-1px);
+    }
+
+
+   
+
+    .empty-state {
+
+        padding: 60px 20px;
+
+        text-align: center;
+    }
+
+    .empty-state-icon {
+
+        color: #475569;
+
+        font-size: 42px;
+
+        margin-bottom: 12px;
+    }
+
+    .empty-state-title {
+
+        color: #cbd5e1;
+
+        font-size: 15px;
+
+        font-weight: 600;
+
+        margin-bottom: 5px;
+    }
+
+    .empty-state-text {
+
+        color: #64748b;
+
+        font-size: 12px;
+    }
+
+
+  
+
+    @@media (max-width: 991.98px) {
+
+        .employee-page {
+            padding: 20px;
+        }
+
+        .employee-table {
+            min-width: 1100px;
+        }
+
+    }
+
+
     @@media (max-width: 767.98px) {
-        .page-container {
-            padding-left: 12px !important;
-            padding-right: 12px !important;
+
+        .employee-page {
+            padding: 15px 10px;
         }
 
-        .header-actions {
+        .employee-header {
             flex-direction: column;
+
             align-items: stretch !important;
-            gap: 12px;
+
+            gap: 15px;
         }
 
-        .desktop-table-view {
-            display: none !important;
+        .page-title {
+            font-size: 21px;
         }
 
-        .mobile-cards-view {
-            display: flex !important;
-            flex-direction: column;
-            gap: 12px;
+        .page-subtitle {
+            font-size: 12px;
         }
 
-        .mobile-emp-card {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            padding: 14px;
+        .back-button,
+        .add-button {
+            width: 100%;
         }
+
+        .search-card {
+            padding: 15px !important;
+        }
+
     }
 
-    @@media (min-width: 768px) {
-        .mobile-cards-view {
-            display: none !important;
+
+    @@media (max-width: 575.98px) {
+
+        .employee-page {
+            padding: 12px 8px;
         }
+
+        .glass-panel {
+            border-radius: 15px;
+        }
+
+        .search-card {
+            padding: 12px !important;
+        }
+
     }
+
 </style>
 
-<div class="container-fluid py-4 px-3 px-md-4 page-container">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-md-center header-actions mb-4">
+
+<div class="employee-page">
+
+
+
+    <div class="employee-header d-flex justify-content-between align-items-center mb-4">
+
         <div>
-            <h4 class="fw-bold text-white mb-1">Employee Directory</h4>
-            <div class="small text-muted">Manage registered staff records and biometric enrollments</div>
+
+            <h4 class="page-title">
+                Employee Directory
+            </h4>
+
+            <div class="page-subtitle">
+                Manage registered staff records and biometric enrollments
+            </div>
+
         </div>
-        <a asp-controller="Employee" asp-action="Create" class="btn btn-glow-primary d-flex align-items-center justify-content-center gap-2 py-2 px-3">
-            <i class="bi bi-person-plus-fill"></i> Add Employee
+
+
+        <a asp-controller="Employee"
+           asp-action="Create"
+           class="btn btn-glow-primary add-button px-3 py-2">
+
+            <i class="bi bi-person-plus-fill me-1"></i>
+
+            Add Employee
+
         </a>
+
     </div>
 
-    <!-- Responsive Filter Bar -->
-    <div class="glass-panel p-3 p-md-4 mb-4">
-        <form method="get" class="row g-2 g-md-3 align-items-end">
-            <div class="col-12 col-md-5">
-                <label class="form-label small fw-semibold text-light mb-1">Search Directory</label>
-                <div class="position-relative">
-                    <input type="text" name="search" value="@ViewBag.SearchTerm" class="form-control glass-input" placeholder="Search by name, email or ID..." />
+
+
+
+    <div class="glass-panel search-card mb-4">
+
+        <div class="search-title">
+
+            <i class="bi bi-search me-1"></i>
+
+            Search Employees
+
+        </div>
+
+
+        <form asp-controller="Employee"
+              asp-action="Index"
+              method="get">
+
+            <div class="row g-3">
+
+
+                <!-- SEARCH -->
+
+                <div class="col-12 col-md-5">
+
+                    <label class="search-label">
+
+                        Search
+
+                    </label>
+
+                    <input type="text"
+                           name="search"
+                           value="@ViewBag.SearchTerm"
+                           class="form-control glass-input"
+                           placeholder="Name, employee code, email or designation" />
+
                 </div>
+
+
+
+                <div class="col-12 col-md-4">
+
+                    <label class="search-label">
+
+                        Department
+
+                    </label>
+
+                    <select name="department"
+                            class="form-select glass-input">
+
+                        <option value="">
+                            All Departments
+                        </option>
+
+                        <option value="IT">
+                            IT
+                        </option>
+
+                        <option value="HR">
+                            HR
+                        </option>
+
+                        <option value="Finance">
+                            Finance
+                        </option>
+
+                        <option value="Marketing">
+                            Marketing
+                        </option>
+
+                        <option value="Operations">
+                            Operations
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <div class="col-12 col-md-3 d-flex align-items-end gap-2">
+
+                    <button type="submit"
+                            class="btn btn-glow-primary flex-fill py-2">
+
+                        <i class="bi bi-search me-1"></i>
+
+                        Search
+
+                    </button>
+
+
+                    <a asp-controller="Employee"
+                       asp-action="Index"
+                       class="btn btn-glass-secondary px-3 py-2">
+
+                        Reset
+
+                    </a>
+
+                </div>
+
             </div>
-            <div class="col-12 col-md-4">
-                <label class="form-label small fw-semibold text-light mb-1">Department</label>
-                <select name="department" class="form-select glass-input">
-                    <option value="">All Departments</option>
-                    <option value="IT" selected="@(ViewBag.SelectedDepartment == "IT")">IT</option>
-                    <option value="HR" selected="@(ViewBag.SelectedDepartment == "HR")">HR</option>
-                    <option value="Finance" selected="@(ViewBag.SelectedDepartment == "Finance")">Finance</option>
-                    <option value="Marketing" selected="@(ViewBag.SelectedDepartment == "Marketing")">Marketing</option>
-                    <option value="Operations" selected="@(ViewBag.SelectedDepartment == "Operations")">Operations</option>
-                </select>
-            </div>
-            <div class="col-12 col-md-3 d-flex gap-2 mt-3 mt-md-0">
-                <button type="submit" class="btn btn-glow-primary flex-fill py-2">
-                    <i class="bi bi-search me-1"></i> Filter
-                </button>
-                <a asp-action="Index" class="btn btn-glass-secondary px-3 py-2">
-                    Reset
-                </a>
-            </div>
+
         </form>
+
     </div>
 
-    <!-- Main List / Table -->
-    <div class="glass-panel overflow-hidden p-2 p-md-0">
-        <!-- Desktop / Tablet Table View (>= 768px) -->
-        <div class="table-responsive desktop-table-view">
-            <table class="table table-glass align-middle">
+
+    <!-- =====================================================
+         SUCCESS MESSAGE
+    ====================================================== -->
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success employee-alert">
+
+            <i class="bi bi-check-circle me-1"></i>
+
+            @TempData["SuccessMessage"]
+
+        </div>
+    }
+
+
+    <!-- =====================================================
+         ERROR MESSAGE
+    ====================================================== -->
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger employee-alert">
+
+            <i class="bi bi-exclamation-triangle me-1"></i>
+
+            @TempData["ErrorMessage"]
+
+        </div>
+    }
+
+
+    <!-- =====================================================
+         EMPLOYEE TABLE
+    ====================================================== -->
+
+    <div class="glass-panel employee-table-panel">
+
+
+        <!-- TABLE TITLE -->
+
+        <div class="table-heading d-flex justify-content-between align-items-center">
+
+            <div>
+
+                <h5>
+
+                    <i class="bi bi-people-fill me-2 text-primary"></i>
+
+                    Employees
+
+                </h5>
+
+            </div>
+
+
+            <span class="employee-count">
+
+                @if (Model != null)
+                {
+                    @Model.Count() <text> Employees</text>
+                }
+
+            </span>
+
+        </div>
+
+
+        <!-- TABLE -->
+
+        <div class="table-wrapper">
+
+            <table class="employee-table">
+
+
+               
+
                 <thead>
-                    <tr class="text-uppercase">
-                        <th class="ps-4">Employee</th>
-                        <th>Department</th>
-                        <th>Designation</th>
-                        <th>Joining Date</th>
-                        <th>Status</th>
-                        <th class="text-end pe-4">Actions</th>
+
+                    <tr>
+
+                        <th>
+                            Employee
+                        </th>
+
+                        <th>
+                            Department
+                        </th>
+
+                        <th>
+                            Designation
+                        </th>
+
+                        <th>
+                            Joining Date
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Actions
+                        </th>
+
                     </tr>
+
                 </thead>
+
+
+
                 <tbody>
+
                     @if (Model != null && Model.Any())
                     {
+
                         foreach (var emp in Model)
                         {
+
                             <tr>
-                                <td class="ps-4">
-                                    <div class="d-flex align-items-center gap-3">
-                                        @if (!string.IsNullOrEmpty(emp.PhotoPath))
+
+
+                             
+
+                                <td>
+
+                                    <div>
+
+                                        <div class="employee-name">
+
+                                            @emp.FullName
+
+                                        </div>
+
+
+                                        <div class="employee-code">
+
+                                            @emp.EmployeeCode
+
+                                            <span class="mx-1">
+                                                •
+                                            </span>
+
+                                            <span class="employee-email">
+                                                @emp.Email
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- DEPARTMENT -->
+
+                                <td>
+
+                                    <span class="department-badge">
+
+                                        @if (string.IsNullOrWhiteSpace(emp.Department))
                                         {
-                                            <img src="@emp.PhotoPath" class="avatar-img" alt="Photo" />
+                                            <text>-</text>
                                         }
                                         else
                                         {
-                                            <div class="avatar-bubble">
-                                                @(string.IsNullOrEmpty(emp.FullName) ? "E" : emp.FullName.Substring(0, 1).ToUpper())
-                                            </div>
+                                            @emp.Department
                                         }
-                                        <div>
-                                            <div class="fw-semibold text-white">@emp.FullName</div>
-                                            <div class="text-muted small">@emp.EmployeeCode &bull; @emp.Email</div>
-                                        </div>
-                                    </div>
+
+                                    </span>
+
                                 </td>
+
+
+                               
+
                                 <td>
-                                    <span class="badge badge-dept px-2 py-1">@emp.Department</span>
+
+                                    <span class="designation-text">
+
+                                        @if (string.IsNullOrWhiteSpace(emp.Designation))
+                                        {
+                                            <text>-</text>
+                                        }
+                                        else
+                                        {
+                                            @emp.Designation
+                                        }
+
+                                    </span>
+
                                 </td>
-                                <td class="text-light small">@emp.Designation</td>
-                                <td class="text-muted small">@emp.JoiningDate.ToString("MMM dd, yyyy")</td>
+
+
+                               
+
                                 <td>
+
+                                    <span class="joining-date">
+
+                                        @emp.JoiningDate.ToString("MMM dd, yyyy")
+
+                                    </span>
+
+                                </td>
+
+
+                               
+
+                                <td>
+
                                     @if (emp.IsActive)
                                     {
-                                        <span class="badge badge-active px-2 py-1">Active</span>
+
+                                        <form asp-controller="Employee"
+                                              asp-action="ToggleStatus"
+                                              asp-route-id="@emp.Id"
+                                              method="post"
+                                              class="d-inline">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <button type="submit"
+                                                    class="status-btn status-active">
+
+                                                <i class="bi bi-toggle-on"></i>
+
+                                                Active
+
+                                            </button>
+
+                                        </form>
+
                                     }
                                     else
                                     {
-                                        <span class="badge badge-inactive px-2 py-1">Inactive</span>
+
+                                        <form asp-controller="Employee"
+                                              asp-action="ToggleStatus"
+                                              asp-route-id="@emp.Id"
+                                              method="post"
+                                              class="d-inline">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <button type="submit"
+                                                    class="status-btn status-inactive">
+
+                                                <i class="bi bi-toggle-off"></i>
+
+                                                Inactive
+
+                                            </button>
+
+                                        </form>
+
                                     }
+
                                 </td>
-                                <td class="text-end pe-4">
-                                    <a asp-controller="LiveAttendance" asp-action="Index" class="btn btn-sm btn-glass-secondary px-2 py-1" title="Gate Camera Test">
-                                        <i class="bi bi-camera-video"></i>
-                                    </a>
+
+
+                                
+
+                                <td>
+
+                                    <div class="action-container">
+
+
+                                        <!-- EDIT -->
+
+                                        <a asp-controller="Employee"
+                                           asp-action="Edit"
+                                           asp-route-id="@emp.Id"
+                                           class="action-btn action-edit">
+
+                                            <i class="bi bi-pencil-square"></i>
+
+                                            Edit
+
+                                        </a>
+
+
+                                       
+
+                                        <form asp-controller="Employee"
+                                              asp-action="Delete"
+                                              asp-route-id="@emp.Id"
+                                              method="post"
+                                              class="d-inline"
+                                              onsubmit="return confirm('Are you sure you want to delete this employee?');">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <button type="submit"
+                                                    class="action-btn action-delete">
+
+                                                <i class="bi bi-trash"></i>
+
+                                                Delete
+
+                                            </button>
+
+                                        </form>
+
+
+                                        
+
+                                        <a asp-controller="LiveAttendance"
+                                           asp-action="Index"
+                                           asp-route-id="@emp.Id"
+                                           class="action-btn action-gate">
+
+                                            <i class="bi bi-camera-video"></i>
+
+                                            Gate
+
+                                        </a>
+
+                                    </div>
+
                                 </td>
+
                             </tr>
+
                         }
+
                     }
                     else
                     {
+
+                       
+
                         <tr>
-                            <td colspan="6" class="text-center py-5">
-                                <i class="bi bi-person-slash fs-1 d-block mb-2 text-muted"></i>
-                                <span class="text-muted">No registered employees found.</span>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
 
-        <!-- Mobile Cards View (< 768px) -->
-        <div class="mobile-cards-view">
-            @if (Model != null && Model.Any())
-            {
-                foreach (var emp in Model)
-                {
-                    <div class="mobile-emp-card">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <div class="d-flex align-items-center gap-2">
-                                @if (!string.IsNullOrEmpty(emp.PhotoPath))
-                                {
-                                    <img src="@emp.PhotoPath" class="avatar-img" alt="Photo" />
-                                }
-                                else
-                                {
-                                    <div class="avatar-bubble">
-                                        @(string.IsNullOrEmpty(emp.FullName) ? "E" : emp.FullName.Substring(0, 1).ToUpper())
+                            <td colspan="6">
+
+                                <div class="empty-state">
+
+                                    <i class="bi bi-person-slash empty-state-icon"></i>
+
+                                    <div class="empty-state-title">
+
+                                        No Employees Found
+
                                     </div>
-                                }
-                                <div>
-                                    <div class="fw-semibold text-white">@emp.FullName</div>
-                                    <div class="text-muted small">@emp.EmployeeCode</div>
-                                </div>
-                            </div>
-                            <div>
-                                @if (emp.IsActive)
-                                {
-                                    <span class="badge badge-active px-2 py-1">Active</span>
-                                }
-                                else
-                                {
-                                    <span class="badge badge-inactive px-2 py-1">Inactive</span>
-                                }
-                            </div>
-                        </div>
 
-                        <div class="row g-2 pt-2 border-top border-secondary border-opacity-25 small">
-                            <div class="col-6">
-                                <span class="text-muted d-block">Department</span>
-                                <span class="badge badge-dept">@emp.Department</span>
-                            </div>
-                            <div class="col-6 text-end">
-                                <span class="text-muted d-block">Designation</span>
-                                <span class="text-light">@emp.Designation</span>
-                            </div>
-                            <div class="col-8">
-                                <span class="text-muted d-block">Email</span>
-                                <span class="text-light text-truncate d-block">@emp.Email</span>
-                            </div>
-                            <div class="col-4 text-end d-flex align-items-end justify-content-end">
-                                <a asp-controller="LiveAttendance" asp-action="Index" class="btn btn-sm btn-glass-secondary px-3 py-1" title="Gate Camera Test">
-                                    <i class="bi bi-camera-video me-1"></i> Gate
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                }
-            }
-            else
-            {
-                <div class="text-center py-5">
-                    <i class="bi bi-person-slash fs-1 d-block mb-2 text-muted"></i>
-                    <span class="text-muted">No registered employees found.</span>
-                </div>
-            }
+                                    <div class="empty-state-text">
+
+                                        There are no employee records to display.
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    }
+
+                </tbody>
+
+            </table>
+
         </div>
+
     </div>
+
 </div>

@@ -20,16 +20,19 @@ import uvicorn
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# --- Configuration ---
+# ==============================================================================
+# CONFIGURATION
+# ==============================================================================
+# Verify port from launchSettings.json or browser address bar
 MVC_BASE_URL = "https://localhost:58441"
 API_GET_EMBEDDINGS = f"{MVC_BASE_URL}/LiveAttendance/GetKnownEmbeddings"
 API_POST_DETECTION = f"{MVC_BASE_URL}/LiveAttendance/ProcessDetection"
-CAMERA_ID = "CAM-MAIN-01"
+CAMERA_ID = "LAPTOP-CAM-01"
 
-# Threshold lowered for typical built-in laptop webcams
-SIMILARITY_THRESHOLD = 0.25
+# Cosine similarity threshold for buffalo_s model (0.30 - 0.35 for standard webcams)
+SIMILARITY_THRESHOLD = 0.32
 FRAME_SKIP = 2
-COOLDOWN_SECONDS = 5  # 5 seconds during testing so live updates register quickly
+COOLDOWN_SECONDS = 5
 WWWROOT_PATH = r"C:\Users\hp\Desktop\LAB\SmartHRM\SmartHRM.Presentation\wwwroot"
 
 print("[INFO] Initializing InsightFace buffalo_s model...")
@@ -48,12 +51,14 @@ annotated_frame: Optional[np.ndarray] = None
 frame_lock = threading.Lock()
 
 
+# ==============================================================================
+# VECTOR & IMAGE DECODING UTILITIES
+# ==============================================================================
 def l2_normalize(vec: np.ndarray) -> np.ndarray:
     norm = np.linalg.norm(vec)
     if norm < 1e-6:
         return vec
     return vec / norm
-
 
 def calculate_cosine_similarity(vec1: np.ndarray, vec2: np.ndarray) -> float:
     v1 = l2_normalize(vec1)
@@ -71,6 +76,40 @@ def decode_base64_image(base64_str: str) -> Optional[np.ndarray]:
     except Exception as ex:
         print(f"[ERROR] Base64 decode failed: {ex}")
         return None
+
+
+def parse_database_vector(raw_vec) -> np.ndarray:
+    """
+    Parses vector representations returned by ASP.NET MVC:
+      1. Base64-encoded byte[] (C# byte[] serialization format)
+      2. JSON-encoded float list string ("[0.12, -0.45, ...]")
+      3. Python float list
+    """
+    if raw_vec is None:
+        return np.array([], dtype=np.float32)
+
+    if isinstance(raw_vec, list):
+        return np.array(raw_vec, dtype=np.float32)
+
+    if isinstance(raw_vec, str):
+        clean_str = raw_vec.strip()
+        # JSON Array format
+        if clean_str.startswith("[") and clean_str.endswith("]"):
+            try:
+                parsed = json.loads(clean_str)
+                return np.array(parsed, dtype=np.float32)
+            except Exception:
+                pass
+
+        # Base64 binary byte[] format (512 float32 items = 2048 bytes)
+        try:
+            raw_bytes = base64.b64decode(clean_str)
+            if len(raw_bytes) == 2048:
+                return np.frombuffer(raw_bytes, dtype=np.float32)
+        except Exception:
+            pass
+
+    return np.array([], dtype=np.float32)
 
 
 def extract_embedding_from_file_or_url(photo_path: str) -> Optional[np.ndarray]:
@@ -120,13 +159,7 @@ def load_mvc_embeddings():
                 photo_path = info.get("photoPath", "")
                 raw_vec = info.get("vector")
 
-                if isinstance(raw_vec, str):
-                    try:
-                        raw_vec = json.loads(raw_vec)
-                    except Exception:
-                        raw_vec = []
-
-                vec = np.array(raw_vec, dtype=np.float32) if raw_vec else np.array([])
+                vec = parse_database_vector(raw_vec)
 
                 if len(vec) == 512:
                     known_embeddings[emp_id] = l2_normalize(vec)
@@ -138,6 +171,10 @@ def load_mvc_embeddings():
                         known_embeddings[emp_id] = extracted
                         employee_profiles[emp_id] = {"name": name, "code": code}
                         print(f"  [+] Extracted Disk Vector: {name} [{code}]")
+                    else:
+                        print(f"  [-] Failed to extract vector from photo for {name} [{code}]")
+                else:
+                    print(f"  [-] No vector or valid photo for {name} [{code}]")
 
             print(f"[READY] Recognition targets active in memory: {len(known_embeddings)}")
         else:
@@ -146,6 +183,9 @@ def load_mvc_embeddings():
         print(f"[ERROR] Could not connect to ASP.NET MVC backend: {e}")
 
 
+# ==============================================================================
+# CAMERA STREAM WORKER
+# ==============================================================================
 def get_camera():
     for idx in [0, 1]:
         for backend in [cv2.CAP_DSHOW, cv2.CAP_MSMF, cv2.CAP_ANY]:
@@ -156,7 +196,7 @@ def get_camera():
                 if ret and frame is not None and frame.size > 0:
                     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
                     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-                    print(f"[SUCCESS] Physical camera initialized on Index: {idx}")
+                    print(f"[SUCCESS] Laptop webcam initialized on Index: {idx} (Backend: {backend})")
                     return cap
                 cap.release()
     return None
@@ -168,7 +208,7 @@ def camera_stream_worker():
 
     cap = get_camera()
     if cap is None:
-        print("[ERROR] Failed to open any camera. Verify no other app has locked the webcam.")
+        print("[ERROR] Failed to open laptop webcam. Ensure no other application (Teams, Zoom, Windows Camera) has exclusive access.")
         return
 
     frame_count = 0
@@ -188,7 +228,8 @@ def camera_stream_worker():
 
             for face in faces:
                 bbox = [int(x) for x in face.bbox]
-                current_vec = face.embedding
+                # Normalize live frame vector
+                current_vec = l2_normalize(face.embedding)
 
                 best_match_id = None
                 best_score = -1.0
@@ -226,7 +267,7 @@ def camera_stream_worker():
                             "CameraId": CAMERA_ID,
                             "ConfidenceScore": round(best_score * 100, 2)
                         }
-                        
+
                         def post_to_mvc(data_payload):
                             try:
                                 res = requests.post(API_POST_DETECTION, json=data_payload, verify=False, timeout=2)
@@ -238,7 +279,7 @@ def camera_stream_worker():
                         threading.Thread(target=post_to_mvc, args=(payload,), daemon=True).start()
                 else:
                     score_label = f" ({best_score * 100:.1f}%)" if best_score > 0 else ""
-                    # Red detection box
+                    # Red detection box for unrecognized faces
                     cv2.rectangle(display_frame, (bbox[0], bbox[1]), (bbox[2], bbox[3]), (0, 0, 255), 2)
                     cv2.putText(
                         display_frame,
@@ -274,6 +315,9 @@ def generate_mjpeg_frames():
         time.sleep(0.03)
 
 
+# ==============================================================================
+# FASTAPI LIFECYCLE & ROUTES
+# ==============================================================================
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global camera_running
@@ -324,6 +368,18 @@ def capture_single_frame():
         return {"image": f"data:image/jpeg;base64,{b64}"}
 
 
+@app.get("/snapshot")
+def get_snapshot():
+    global clean_frame
+    with frame_lock:
+        if clean_frame is None:
+            return Response(status_code=503, content="Camera frame not ready")
+        ret, buffer = cv2.imencode(".jpg", clean_frame)
+        if not ret:
+            return Response(status_code=500, content="Failed to encode frame")
+        return Response(content=buffer.tobytes(), media_type="image/jpeg")
+
+
 @app.post("/reload-embeddings")
 async def reload_embeddings():
     load_mvc_embeddings()
@@ -351,16 +407,6 @@ async def extract_master_embedding(request: FrameBatchRequest):
 
     master_vec = l2_normalize(np.mean(embeddings, axis=0))
     return {"embedding": master_vec.tolist()}
-import cv2
-from fastapi.responses import Response
-
-@app.get("/snapshot")
-def get_snapshot():
-    success, frame = camera.read()
-    if not success:
-        return Response(status_code=503)
-    _, buffer = cv2.imencode('.jpg', frame)
-    return Response(content=buffer.tobytes(), media_type="image/jpeg")
 
 
 if __name__ == "__main__":

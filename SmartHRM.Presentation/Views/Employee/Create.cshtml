@@ -1,11 +1,11 @@
-﻿@{
+﻿ @{
     ViewData["Title"] = "Add Employee";
 }
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
 <style>
-    /* Glassmorphic Panels */
+   
     .glass-panel {
         background: rgba(15, 23, 42, 0.72);
         backdrop-filter: blur(18px);
@@ -15,7 +15,7 @@
         box-shadow: 0 20px 45px -12px rgba(0, 0, 0, 0.55);
     }
 
-    /* Video Feed Container */
+   
     .capture-feed-wrapper {
         width: 100%;
         aspect-ratio: 4 / 3;
@@ -106,7 +106,7 @@
             color: #f8fafc;
         }
 
-    /* Buttons */
+   
     .btn-glow-primary {
         background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
         border: none;
@@ -156,7 +156,7 @@
             border-color: rgba(255, 255, 255, 0.3);
         }
 
-    /* Thumbnail Gallery */
+    
     .preview-tray {
         display: grid;
         grid-template-columns: repeat(5, 1fr);
@@ -177,7 +177,7 @@
             border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
-    /* Responsive Adjustments */
+    
     @@media (max-width: 991.98px) {
         .form-section-col {
             border-left: none !important;
@@ -189,7 +189,7 @@
 </style>
 
 <div class="container-fluid py-4 px-3 px-md-4">
-    <!-- Header -->
+    
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h4 class="fw-bold text-white mb-1">Register New Employee</h4>
@@ -204,14 +204,14 @@
 
     <div class="glass-panel p-3 p-md-4">
         <div class="row g-4">
-            <!-- LEFT: Camera Stream & Biometric Capture Area -->
+          
             <div class="col-12 col-lg-6">
                 <div class="capture-feed-wrapper">
                     <div class="live-badge">
                         <span class="live-indicator"></span> LIVE
                     </div>
 
-                    <!-- AI Service Stream Feed -->
+                   
                     <img id="registrationVideoFeed"
                          src="http://127.0.0.1:8000/video_feed"
                          crossorigin="anonymous"
@@ -221,7 +221,7 @@
 
                     <div class="face-focus-target"></div>
 
-                    <!-- Offline State Message -->
+                    
                     <div id="camOfflineNotice" style="display: none; text-align: center; color: #94a3b8; padding: 20px;">
                         <i class="bi bi-camera-video-off fs-1 d-block mb-2 text-danger"></i>
                         <h6 class="fw-bold text-white mb-1">Camera Stream Offline</h6>
@@ -229,10 +229,10 @@
                     </div>
                 </div>
 
-                <!-- Hidden Canvas for Fallback Frame Grabbing -->
+
                 <canvas id="auxCanvas" class="d-none" width="640" height="480"></canvas>
 
-                <!-- Action Button -->
+               
                 <div class="mt-3 text-center">
                     <button type="button"
                             class="btn btn-glow-success px-4 py-2 w-100 w-sm-auto"
@@ -242,7 +242,6 @@
                     </button>
                 </div>
 
-                <!-- Progress Bar & Status -->
                 <div class="mt-3">
                     <div class="d-flex justify-content-between small fw-semibold text-secondary mb-1">
                         <span id="captureStatusText" class="text-muted">Ready to capture biometrics</span>
@@ -253,36 +252,36 @@
                     </div>
                 </div>
 
-                <!-- Captured Thumbnails Grid Preview -->
+              
                 <div class="mt-3" id="traySection" style="display: none;">
                     <span class="small fw-semibold text-secondary d-block mb-1">Captured Samples Preview</span>
                     <div class="preview-tray" id="capturedThumbsContainer"></div>
                 </div>
             </div>
 
-            <!-- RIGHT: Form Input Fields -->
+            
             <div class="col-12 col-lg-6 ps-lg-4 form-section-col" style="border-left: 1px solid rgba(255, 255, 255, 0.1);">
                 <h6 class="fw-bold text-white border-bottom border-secondary border-opacity-25 pb-2 mb-3">Employee Details</h6>
 
                 <div class="row g-3">
                     <div class="col-12 col-sm-6">
                         <label class="form-label small fw-semibold text-light mb-1" for="empCode">Employee Code <span class="text-danger">*</span></label>
-                        <input type="text" id="empCode" class="form-control glass-input" placeholder="EMP00201" required />
+                        <input type="text" id="empCode" class="form-control glass-input" placeholder="EMP00201" required pattern="(?=.*[A-Z])(?=.*[0-9]){8}" />
                     </div>
 
                     <div class="col-12 col-sm-6">
                         <label class="form-label small fw-semibold text-light mb-1" for="empName">Full Name <span class="text-danger">*</span></label>
-                        <input type="text" id="empName" class="form-control glass-input" placeholder="John Doe" required />
+                        <input type="text" id="empName" class="form-control glass-input" placeholder="John Doe" required pattern="[A-Z][a-z]+[A-Z][a-z]+{5,}"/>
                     </div>
 
                     <div class="col-12 col-sm-6">
                         <label class="form-label small fw-semibold text-light mb-1" for="empEmail">Email Address <span class="text-danger">*</span></label>
-                        <input type="email" id="empEmail" class="form-control glass-input" placeholder="john.doe@company.com" required />
+                        <input type="email" id="empEmail" class="form-control glass-input" placeholder="company@company.com" required />
                     </div>
 
                     <div class="col-12 col-sm-6">
                         <label class="form-label small fw-semibold text-light mb-1" for="empPhone">Phone Number</label>
-                        <input type="tel" id="empPhone" class="form-control glass-input" placeholder="9876543210" />
+                        <input type="tel" id="empPhone" class="form-control glass-input" placeholder="9876543210" pattern="[6-9][0-9]{9}"/>
                     </div>
 
                     <div class="col-12 col-sm-6">
@@ -293,12 +292,13 @@
                             <option value="Finance">Finance</option>
                             <option value="Marketing">Marketing</option>
                             <option value="Operations">Operations</option>
+                            <option value="Outher">Outher</option>
                         </select>
                     </div>
 
                     <div class="col-12 col-sm-6">
                         <label class="form-label small fw-semibold text-light mb-1" for="empRole">Designation <span class="text-danger">*</span></label>
-                        <input type="text" id="empRole" class="form-control glass-input" placeholder="Software Engineer" required />
+                        <input type="text" id="empRole" class="form-control glass-input" placeholder="Software Engineer" required pattern="[A-Z][a-z]+[A-Z][a-z]+{2,}" />
                     </div>
 
                     <div class="col-12 col-sm-6">
@@ -312,7 +312,7 @@
 
                     <div class="col-12 col-sm-6">
                         <label class="form-label small fw-semibold text-light mb-1" for="empAddress">Address</label>
-                        <input type="text" id="empAddress" class="form-control glass-input" placeholder="City, State" />
+                        <input type="text" id="empAddress" class="form-control glass-input" placeholder="City, State" pattern="[A-Z][a-z]+[A-Z][a-z]+{2,}" />
                     </div>
                 </div>
 

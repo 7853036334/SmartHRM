@@ -6,17 +6,24 @@
 		<!-- Ignore NU1510 pruning warning -->
 		<NoWarn>$(NoWarn);NU1510</NoWarn>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Compile Remove="Controllers\EmployeeController.cs" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="ClosedXML" Version="0.105.1" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.11">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.Graph" Version="6.5.0" />
+		<PackageReference Include="Microsoft.Graph" Version="6.7.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\SmartHRM.BusinessLogic\SmartHRM.BusinessLogic.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="wwwroot\videos\" />
 	</ItemGroup>
 </Project>

@@ -7,15 +7,15 @@ public class DashboardViewModel
     public int AbsentToday { get; set; }
     public int LateArrivals { get; set; }
 
-    // Computed attendance rate displayed on the KPI card
+   
     public int PresentPercentage =>
         TotalEmployees > 0 ? (int)Math.Round((double)PresentToday / TotalEmployees * 100) : 0;
 
-    // Chart Data Sources
+   
     public Dictionary<string, int> DepartmentWiseCount { get; set; } = new();
     public List<int> WeeklyAttendanceTrends { get; set; } = new();
 
-    // SignalR & Activity Feed
+   
     public List<RecentActivityItem> RecentActivities { get; set; } = new();
 }
 

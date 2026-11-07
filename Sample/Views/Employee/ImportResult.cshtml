@@ -1,0 +1,49 @@
+﻿@model List<Sample.Models.importErrorViewModel>
+
+<h2>Import Result</h2>
+
+@if (Model.Count == 0)
+{
+    <div class="alert alert-success">
+        All records imported successfully.
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">
+        Some records could not be imported.
+    </div>
+
+    <table class="table table-bordered">
+
+        <thead>
+            <tr>
+                <th>Excel Row</th>
+                <th>Employee Code</th>
+                <th>Error</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            @foreach (var error in Model)
+            {
+                <tr>
+                    <td>
+                        @error.RowNumber
+                    </td>
+
+                    <td>
+                        @error.EmployeeCode
+                    </td>
+
+                    <td>
+                        @error.ErrorMessage
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+}
